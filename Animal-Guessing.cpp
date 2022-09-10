@@ -85,13 +85,12 @@ int main() {
 	do {
 		std::cout << "For the " << std::quoted(new_animal) << ", does the question "
 			<< std::quoted(new_question) << " get answered with a Yes(y), or No(n)?\n";
-		std::cin >> typed_key >> std::ws;
+		std::cin >> typed_key;
 	} while (!std::cin.fail() && typed_key != 'y' && typed_key != 'n');
 
 	const auto new_question_index = (typed_key == 'y') ?
 
 		element.indices.yes :
 		element.indices.no;
-	}
 
 }
