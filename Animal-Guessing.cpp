@@ -16,10 +16,12 @@
 
 struct Element {
 	std::string question_or_animal;
-	struct Answ_IDs {
-		size_t yes, no;
-	} answ_IDs;
-	bool is_an_animal() const { return answ_IDs.yes == 0 && answ_IDs.no == 0; }
+	struct To_next {
+		size_t yes_ID, no_ID;
+	} to_next;
+	bool is_an_animal() const { 
+		return to_next.yes_ID == 0 && to_next.no_ID == 0; 
+	}
 };
 
 std::vector<Element> database { 
@@ -51,7 +53,7 @@ int main() {
 			last_question_key = typed_key;
 			last_question_index = current_index;
 
-			current_index = (typed_key == 'y') ? element.answ_IDs.yes : element.answ_IDs.no;
+			current_index = (typed_key == 'y') ? element.to_next.yes_ID : element.to_next.no_ID;
 			const auto& next_element = database[current_index];
 			if (next_element.is_an_animal()) {
 				break;	// terminal node, i.e. an animal
@@ -100,16 +102,16 @@ int main() {
 
 		// Add new question to database
 		const auto& new_question_indices = (typed_key == 'y') ?
-			Element::Answ_IDs{ new_animal_index, current_index }: 
-			Element::Answ_IDs{ current_index, new_animal_index };
+			Element::To_next{ new_animal_index, current_index }: 
+			Element::To_next{ current_index, new_animal_index };
 		const Element new_DB_question{ new_question, new_question_indices };
 		const auto& ref2 = database.emplace_back(new_DB_question);
 		const size_t new_question_index = &ref2 - database.data();
 
 		// Reconnect last question on database
 		if (last_question_key == 'y')
-			database[last_question_index].answ_IDs.yes = new_question_index;
+			database[last_question_index].to_next.yes_ID = new_question_index;
 		else
-			database[last_question_index].answ_IDs.no = new_question_index;
+			database[last_question_index].to_next.no_ID = new_question_index;
 	} while (true);
 }
