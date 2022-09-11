@@ -25,10 +25,13 @@ struct Element {
 	}
 	// Extractor and inserter
 	friend std::istream& operator >> (std::istream& is, Element& e) {
-		return is >> e.question_or_animal >> e.to_next.yes_ID >> e.to_next.yes_ID; 
+		return is >> std::quoted(e.question_or_animal) 
+			>> e.to_next.yes_ID 
+			>> e.to_next.yes_ID;
 	}
 	friend std::ostream& operator << (std::ostream& os, const Element& e) { 
-		return os << e.question_or_animal << '\t' << e.to_next.yes_ID << '\t' << e.to_next.no_ID; 
+		return os << std::quoted(e.question_or_animal) << '\t' 
+			<< e.to_next.yes_ID << '\t' << e.to_next.no_ID;
 	}
 
 };
@@ -52,7 +55,8 @@ int main() {
 	std::vector<Element> database(start, end);
 	std::cout << "Reading " << database.size() << " questions..\n";
 	std::cout << "Questions read in:\n";
-	std::copy(database.begin(), database.end(), std::ostream_iterator<Element>(std::cout, " "));
+	std::copy(database.begin(), database.end(), 
+		std::ostream_iterator<Element>(std::cout, "\n"));
 	std::cout << std::endl;
 
 
