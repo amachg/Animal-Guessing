@@ -34,7 +34,7 @@ std::vector<Element> database {
 
 int main() {
 	do {
-		std::cout << "Please think of an animal.... Press Enter key when ready.\n";
+		std::cout << "Please think of an animal.... Press Enter key when ready.\n" ;
 		std::cin.ignore();
 
 		// Ask all the stored questions
@@ -99,6 +99,7 @@ int main() {
 				<< std::quoted(new_question) << " get answered with a Yes (y), or No (n) ?\n";
 			std::cin >> typed_key;
 		} while (!std::cin.fail() && typed_key != 'y' && typed_key != 'n');
+		std::cin.get(); // eat the ENTER
 
 		// Add new question to database
 		const auto& new_question_indices = (typed_key == 'y') ?
