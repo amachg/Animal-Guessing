@@ -1,0 +1,5 @@
+"Does it fly?" 2 1
+"Does it swim?" 4 3
+"Eagle" 0 0
+"Dog" 0 0
+"Shark" 0 0

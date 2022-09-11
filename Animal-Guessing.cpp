@@ -13,6 +13,7 @@
 #include <string>
 #include <vector>
 #include <algorithm> //all_of
+#include <fstream>
 
 struct Element {
 	std::string question_or_animal;
@@ -22,19 +23,41 @@ struct Element {
 	bool is_an_animal() const { 
 		return to_next.yes_ID == 0 && to_next.no_ID == 0; 
 	}
+	// Extractor and inserter
+	friend std::istream& operator >> (std::istream& is, Element& e) {
+		return is >> e.question_or_animal >> e.to_next.yes_ID >> e.to_next.yes_ID; 
+	}
+	friend std::ostream& operator << (std::ostream& os, const Element& e) { 
+		return os << e.question_or_animal << '\t' << e.to_next.yes_ID << '\t' << e.to_next.no_ID; 
+	}
+
 };
 
-std::vector<Element> database { 
-	{"Does it fly?", {2,1}},
-	{"Does it swim?", {4,3}},
-	{"Eagle", {0,0}},
-	{"Dog", {0,0}},
-	{"Shark", {0,0}}
-};
+//std::vector<Element> database { 
+//	{"Does it fly?", {2,1}},
+//	{"Does it swim?", {4,3}},
+//	{"Eagle", {0,0}},
+//	{"Dog", {0,0}},
+//	{"Shark", {0,0}}
+//};
 
 int main() {
+	size_t size_DB{ 0 };
+	std::ifstream fileStream("..//..//..//DataBase.txt");
+	if (!fileStream) {
+		std::cout << "I cannot open my database file: DataBase.txt\n";
+		return EXIT_FAILURE;
+	}
+	std::istream_iterator<Element> start(fileStream), end;
+	std::vector<Element> database(start, end);
+	std::cout << "Reading " << database.size() << " questions..\n";
+	std::cout << "Questions read in:\n";
+	std::copy(database.begin(), database.end(), std::ostream_iterator<Element>(std::cout, " "));
+	std::cout << std::endl;
+
+
 	do {
-		std::cout << "Please think of an animal.... Press Enter key when ready.\n" ;
+		std::cout << "Please think of an animal.... Press Enter key when ready.\n";
 		std::cin.ignore();
 
 		// Ask all the stored questions
