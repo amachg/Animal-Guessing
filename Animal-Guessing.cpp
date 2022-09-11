@@ -1,7 +1,7 @@
-﻿// Animal Guessing Game, learning 
-// for console written in c++20 & CMake
+// Animal Guessing Game
+// for consoles written in c++20 & CMake
 // Binary tree structure implemented with vectors.
-// 
+// Users contributing in questions database.
 // Conversion from my Univac-BASIC code of 16/12/86,
 // studing Computer Science in Mathematics Department
 // at Aristotelean University of Thessaloniki,
