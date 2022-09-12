@@ -41,7 +41,7 @@ struct Database {
 
 	size_t current_index{};
 	size_t last_question_index{};
-	char typed_key{};
+	char key_stroke{};
 	char last_question_key{};
 
 	Database() {
@@ -80,57 +80,58 @@ struct Database {
 			std::ostream_iterator<Element>(std::cout, "\n"));
 		std::cout << std::endl;
 	}
-	void ask_all_questions() {
+	auto& ask_all_questions_until_animal() {
 		// Ask all the stored questions
+		current_index = 0;
+		Element* element = &elements[current_index];
 		do {
-			const auto& element = elements[current_index];
-			const auto& question = element.question_or_animal;
+			const auto& question = element->question_or_animal;
 			std::cout << question << '\n';
 			do {
 				std::cout << "Please enter y for Yes, or n for No\n";
-				std::cin >> typed_key;
-			} while (!std::cin.fail() && typed_key != 'y' && typed_key != 'n');
-			last_question_key = typed_key;
+				std::cin >> key_stroke;
+			} while (!std::cin.fail() && key_stroke != 'y' && key_stroke != 'n');
+			last_question_key = key_stroke;
 			last_question_index = current_index;
 
-			current_index = (typed_key == 'y') ? element.to_next.yes_ID : element.to_next.no_ID;
-			const auto& next_element = elements[current_index];
-			if (next_element.is_an_animal()) {
-				break;	// terminal node, i.e. an animal
-			}
-		} while (current_index < elements.size());
+			current_index = (key_stroke == 'y') ?
+				element->to_next.yes_ID :
+				element->to_next.no_ID;
+			element = &elements[current_index];
+		} while (!element->is_an_animal());	// terminal node, i.e. an animal
+
+		return element->question_or_animal;
 	}
-	bool is_animal_found() {
+	bool is_animal_found(const auto& animal) {
 		// Has the animal been found?
-		const auto& element = elements[current_index];
-		const std::string animal = element.question_or_animal;
 		std::cout << "Is it a " << animal << "?\n";
 		do {
 			std::cout << "Please enter y for Yes, or n for No\n";
-			std::cin >> typed_key;
-		} while (!std::cin.fail() && typed_key != 'y' && typed_key != 'n');
+			std::cin >> key_stroke;
+		} while (!std::cin.fail() && key_stroke != 'y' && key_stroke != 'n');
 
-		if (typed_key == 'y') {
+		if (key_stroke == 'y') {
 			std::cout << "YES, I FOUND IT !!\n";
 			return true;
 		}
-		else return false;
+		else
+			return false;
 	}
-	auto add_new_animal() {
+	std::tuple<const std::string, size_t> add_new_animal() {
 		// Add new animal to database.elements
 		std::string new_animal;
 		do {
 			new_animal.clear();
-			std::cout << "Please type the name of the animal you have in your mind..\n";
+			std::cout << "Enter the name of the animal you have in mind.\n";
 			std::getline(std::cin >> std::ws, new_animal);	// can take spaces between words
 		} while (!std::cin.fail() && !std::ranges::all_of(new_animal,
 			[](unsigned char c) { return std::isalpha(c) || std::isblank(c); }));
 		const Element new_DB_animal{ new_animal, {0,0} };
 		const auto& ref = elements.emplace_back(new_DB_animal);
 		const size_t new_animal_index = &ref - elements.data();
-		return new_animal;
+		return {new_animal, new_animal_index};
 	}
-	auto add_new_question(const std::string& new_animal) {
+	auto ask_new_question(const auto& animal, const auto& new_animal) {
 		// Ask new question with answer
 		std::string new_question;
 		do {
@@ -143,10 +144,26 @@ struct Database {
 			std::cout << "Please enter y for Yes, or n for No, on the question "
 				<< std::quoted(new_question) << ", about the animal "
 				<< std::quoted(new_animal) << ".\n";
-			std::cin >> typed_key;
-		} while (!std::cin.fail() && typed_key != 'y' && typed_key != 'n');
+			std::cin >> key_stroke;
+		} while (!std::cin.fail() && key_stroke != 'y' && key_stroke != 'n');
 		std::cin.get(); // eat the ENTER
+
 		return new_question;
+	}
+	void add_new_question(const auto& new_question, auto new_animal_index) {
+		// Add new question to database
+		const auto& new_question_indices = (key_stroke == 'y') ?
+			To_next{ new_animal_index, current_index } :
+			To_next{ current_index, new_animal_index };
+		const Element new_DB_question{ new_question, new_question_indices };
+		const auto& ref2 = elements.emplace_back(new_DB_question);
+		const size_t new_question_index = &ref2 - elements.data();
+
+		// Reconnect last question on database
+		if (last_question_key == 'y')
+			elements[last_question_index].to_next.yes_ID = new_question_index;
+		else
+			elements[last_question_index].to_next.no_ID = new_question_index;
 	}
 };
 
@@ -159,32 +176,21 @@ int main() {
 		std::cout << "Please think of an animal.... Press Enter key when ready.\n";
 		std::cin.ignore();
 
-		database.ask_all_questions();
+		const auto& animal = database.ask_all_questions_until_animal();
 
-		if (database.is_animal_found())
+		if(database.is_animal_found(animal))
 			break;
 
-		const std::string& new_animal = database.add_new_animal();
+		const auto [new_animal, new_animal_index] = database.add_new_animal();
 
-		database.add_new_question(new_animal);
+		const auto& new_question = database.ask_new_question(animal, new_animal);
 
-		// Add new question to database.elements
-		const auto& new_question_indices = (typed_key == 'y') ?
-			To_next{ new_animal_index, current_index } :
-			To_next{ current_index, new_animal_index };
-		const Element new_DB_question{ new_question, new_question_indices };
-		const auto& ref2 = database.elements.emplace_back(new_DB_question);
-		const size_t new_question_index = &ref2 - database.elements.data();
+		database.add_new_question(new_question, new_animal_index);
 
-		// Reconnect last question on database.elements
-		if (last_question_key == 'y')
-			database.elements[last_question_index].to_next.yes_ID = new_question_index;
-		else
-			database.elements[last_question_index].to_next.no_ID = new_question_index;
 	} while (true);
 
 	// Print updated database.
 	database.print();
-
 	database.overwrite_file_with_updated_DB();
+	database.print_file();
 }
