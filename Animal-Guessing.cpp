@@ -36,26 +36,30 @@ struct Element {
 };
 
 int main() {
-	// Open and read all stored database
+	// Open stored database
 	std::fstream fileStream("..//..//..//DataBase.txt");
 	if (!fileStream) {
 		std::cout << "I cannot open my database file: DataBase.txt\n";
 		return EXIT_FAILURE;
 	}
+	//// Print file database
 	//std::cout << "File contents:\n";
 	//std::cout << fileStream.rdbuf() << std::endl;
 	//std::cout << " Current pos:  " << fileStream.tellg() << std::endl;
 	//fileStream.seekg(0); // rewind
 	//std::cout << " Current pos:  " << fileStream.tellg() << std::endl;
 
+	// Read all stored database
 	std::istream_iterator<Element> start(fileStream), end;
 	std::vector<Element> database(start, end);
 	fileStream.clear();                 // clear fail and eof bits
 	std::cout << "Reading " << database.size() << " questions..\n";
-	std::cout << "Vector contents:\n";
-	std::copy(database.cbegin(), database.cend(),
-		std::ostream_iterator<Element>(std::cout, "\n"));
-	std::cout << std::endl;
+
+	//// Print read database
+	//std::cout << "Vector contents:\n";
+	//std::copy(database.cbegin(), database.cend(),
+	//	std::ostream_iterator<Element>(std::cout, "\n"));
+	//std::cout << std::endl;
 
 	do {
 		std::cout << "Please think of an animal.... Press Enter key when ready.\n";
@@ -71,7 +75,7 @@ int main() {
 			const auto& question = element.question_or_animal;
 			std::cout << question << '\n';
 			do {
-				std::cout << "Please answer Yes (y) or No (n)\n";
+				std::cout << "Please enter y for Yes, or n for No\n";
 				std::cin >> typed_key;
 			} while (!std::cin.fail() && typed_key != 'y' && typed_key != 'n');
 			last_question_key = typed_key;
@@ -89,7 +93,7 @@ int main() {
 		const std::string animal = element.question_or_animal;
 		std::cout << "Is it a " << animal << "?\n";
 		do {
-			std::cout << "Please answer Yes (y) or No (n)\n";
+			std::cout << "Please enter y for Yes, or n for No\n";
 			std::cin >> typed_key;
 		} while (!std::cin.fail() && typed_key != 'y' && typed_key != 'n');
 
@@ -119,8 +123,9 @@ int main() {
 			std::getline(std::cin >> std::ws, new_question);
 		} while (!std::cin.fail() && new_question.empty());
 		do {
-			std::cout << "For the " << std::quoted(new_animal) << ", does the question "
-				<< std::quoted(new_question) << " get answered with a Yes (y), or No (n) ?\n";
+			std::cout << "Please enter y for Yes, or n for No, on the question "
+				<< std::quoted(new_question) << ", about the animal " 
+				<< std::quoted(new_animal) << ".\n";
 			std::cin >> typed_key;
 		} while (!std::cin.fail() && typed_key != 'y' && typed_key != 'n');
 		std::cin.get(); // eat the ENTER
@@ -140,13 +145,13 @@ int main() {
 			database[last_question_index].to_next.no_ID = new_question_index;
 	} while (true);
 
-	// Write updated database to fileQuestions
+	//// Print updated database.
+	//std::copy(database.cbegin(), database.cend(),
+	//	std::ostream_iterator<Element>(std::cout, "\n"));
+
+	// Write updated database to file.
 	std::cout << "Writing " << database.size() << " elements to file..\n";
-	fileStream.seekg(0); // rewind
-	//std::cout << " Current pos:  " << fileStream.tellg() << std::endl;
+	fileStream.seekg(0); // rewind to overwrite
 	const auto after_last_iter = std::copy(database.cbegin(), database.cend(),
 		std::ostream_iterator<Element>(fileStream, "\n"));
-
-	std::copy(database.cbegin(), database.cend(),
-		std::ostream_iterator<Element>(std::cout, "\n"));
 }
