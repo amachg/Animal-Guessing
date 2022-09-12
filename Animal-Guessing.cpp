@@ -22,40 +22,38 @@ struct To_next {
 struct Element {
 	std::string question_or_animal;
 	To_next to_next;
-	bool is_an_animal() const { 
-		return to_next.yes_ID == 0 && to_next.no_ID == 0; 
+	bool is_an_animal() const {
+		return to_next.yes_ID == 0 && to_next.no_ID == 0;
 	}
 	friend std::istream& operator >> (std::istream& is, Element& e) {
-		return is >> std::quoted(e.question_or_animal) 
+		return is >> std::quoted(e.question_or_animal)
 			>> e.to_next.yes_ID >> e.to_next.no_ID;
 	}
-	friend std::ostream& operator << (std::ostream& os, const Element& e) { 
-		return os << std::quoted(e.question_or_animal) << '\t' 
+	friend std::ostream& operator << (std::ostream& os, const Element& e) {
+		return os << std::quoted(e.question_or_animal) << '\t'
 			<< e.to_next.yes_ID << '\t' << e.to_next.no_ID;
 	}
 };
 
-//std::vector<Element> database { 
-//	{"Does it fly?", {2,1}},
-//	{"Does it swim?", {4,3}},
-//	{"Eagle", {0,0}},
-//	{"Dog", {0,0}},
-//	{"Shark", {0,0}}
-//};
-
 int main() {
 	// Open and read all stored database
-	size_t size_DB{ 0 };
 	std::fstream fileStream("..//..//..//DataBase.txt");
 	if (!fileStream) {
 		std::cout << "I cannot open my database file: DataBase.txt\n";
 		return EXIT_FAILURE;
 	}
+	//std::cout << "File contents:\n";
+	//std::cout << fileStream.rdbuf() << std::endl;
+	//std::cout << " Current pos:  " << fileStream.tellg() << std::endl;
+	//fileStream.seekg(0); // rewind
+	//std::cout << " Current pos:  " << fileStream.tellg() << std::endl;
+
 	std::istream_iterator<Element> start(fileStream), end;
 	std::vector<Element> database(start, end);
+	fileStream.clear();                 // clear fail and eof bits
 	std::cout << "Reading " << database.size() << " questions..\n";
-	std::cout << "Questions read in:\n";
-	std::copy(database.cbegin(), database.cend(), 
+	std::cout << "Vector contents:\n";
+	std::copy(database.cbegin(), database.cend(),
 		std::ostream_iterator<Element>(std::cout, "\n"));
 	std::cout << std::endl;
 
@@ -129,7 +127,7 @@ int main() {
 
 		// Add new question to database
 		const auto& new_question_indices = (typed_key == 'y') ?
-			To_next{ new_animal_index, current_index }: 
+			To_next{ new_animal_index, current_index } :
 			To_next{ current_index, new_animal_index };
 		const Element new_DB_question{ new_question, new_question_indices };
 		const auto& ref2 = database.emplace_back(new_DB_question);
@@ -142,10 +140,13 @@ int main() {
 			database[last_question_index].to_next.no_ID = new_question_index;
 	} while (true);
 
-	// Write updated database to file
-	std::cout << "Writing " << database.size() << " questions..\n";
-	std::cout << "Questions written out:\n";
-	std::copy(database.cbegin(), database.cend(),
+	// Write updated database to fileQuestions
+	std::cout << "Writing " << database.size() << " elements to file..\n";
+	fileStream.seekg(0); // rewind
+	//std::cout << " Current pos:  " << fileStream.tellg() << std::endl;
+	const auto after_last_iter = std::copy(database.cbegin(), database.cend(),
 		std::ostream_iterator<Element>(fileStream, "\n"));
-	std::cout << std::endl;
+
+	std::copy(database.cbegin(), database.cend(),
+		std::ostream_iterator<Element>(std::cout, "\n"));
 }

@@ -1,5 +1,9 @@
-"Does it fly?" 2 1
-"Does it swim?" 4 3
-"Eagle" 0 0
-"Dog" 0 0
-"Shark" 0 0
+"Does it fly?"	2	1
+"Does it swim?"	4	6
+"Eagle"	0	0
+"Dog"	0	0
+"Shark"	0	0
+"Cat"	0	0
+"Does it bark?"	3	8
+"Spider"	0	0
+"Does it make nets?"	7	5
