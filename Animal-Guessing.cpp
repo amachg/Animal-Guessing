@@ -8,16 +8,14 @@
 //
 // by Machaerides Tassos, (LAST EDITED: September, 2022)
 
+#include <fstream>
 #include <iostream>
 #include <iomanip> //quote
 #include <string>
 #include <vector>
 #include <algorithm> //all_of
-#include <fstream>
 
-struct Next_IDs {
-	size_t yes_ID{}, no_ID{};
-};
+struct Next_IDs { size_t yes_ID{}, no_ID{}; };
 
 struct Element {
 	std::string question_or_animal;
@@ -54,13 +52,6 @@ struct Database {
 		fileStream.clear();                 // clear fail and eof bits
 		std::cout << "Reading " << elements.size() << " questions..\n";
 	}
-	void overwrite_file_with_updated_DB() {
-		// Write updated database to file.
-		std::cout << "Writing " << elements.size() << " database to file..\n";
-		fileStream.seekg(0); // rewind to overwrite
-		const auto after_last_iter = std::copy(elements.cbegin(), elements.cend(),
-			std::ostream_iterator<Element>(fileStream, "\n"));
-	}
 	void print_file() {
 		// Print file database
 		std::cout << "File contents:\n";
@@ -76,32 +67,41 @@ struct Database {
 			std::ostream_iterator<Element>(std::cout, "\n"));
 		std::cout << std::endl;
 	}
+	void update_file() {
+		// Write updated database to file.
+		std::cout << "Writing " << elements.size() << " database to file..\n";
+		fileStream.seekg(0); // rewind to overwrite
+		const auto after_last_iter = std::copy(elements.cbegin(), elements.cend(),
+			std::ostream_iterator<Element>(fileStream, "\n"));
+	}
 
-	std::tuple<const std::string, size_t, size_t* > 
-	ask_all_questions_until_animal() {
+	struct Last_question { size_t index{ 0 }; char responce{}; };
 
+	std::tuple<const std::string, const  size_t, const Last_question >
+		ask_all_questions_until_animal() {
 		// Ask all the stored questions
-		size_t current_index = 0;
+		size_t current_index{ 0 };
 		Element curr_element = elements.front();
-		size_t* next_ID_ptr{};
+		Last_question last_question;
 
-		while (curr_element.is_a_question()) {
+		while (curr_element.is_a_question()) {	// and not an animal
 			const auto& question = curr_element.question_or_animal;
 			std::cout << question << '\n';
+
 			char key_stroke{};
 			do {
 				std::cout << "Please enter y for Yes, or n for No\n";
 				std::cin >> key_stroke;
 			} while (!std::cin.fail() && key_stroke != 'y' && key_stroke != 'n');
+			// backup last question answer..		// ..and question index to return
+			last_question = Last_question{ current_index, key_stroke };
 
-			next_ID_ptr = (key_stroke == 'y') ?
-				&elements[current_index].next_IDs.yes_ID :
-				&elements[current_index].next_IDs.no_ID;
-			current_index = *next_ID_ptr;
-			curr_element = elements[current_index];	// move to next element
+			const auto& next_IDs = curr_element.next_IDs;
+			current_index = (key_stroke == 'y') ? next_IDs.yes_ID : next_IDs.no_ID;
+			curr_element = elements.at(current_index);	// move to next element
 		} 
 		// terminal node, element is an animal
-		return { curr_element.question_or_animal, current_index, next_ID_ptr };
+		return { curr_element.question_or_animal, current_index, last_question };
 	}
 
 	bool is_animal_in_mind(const auto& animal) {
@@ -112,6 +112,7 @@ struct Database {
 			std::cout << "Please enter y for Yes, or n for No\n";
 			std::cin >> key_stroke;
 		} while (!std::cin.fail() && key_stroke != 'y' && key_stroke != 'n');
+
 		return key_stroke == 'y';
 	}
 
@@ -124,15 +125,15 @@ struct Database {
 			std::getline(std::cin >> std::ws, new_animal);	// can take spaces between words
 		} while (!std::cin.fail() && !std::ranges::all_of(new_animal,
 			[](unsigned char c) { return std::isalpha(c) || std::isblank(c); }));
-		const Element new_DB_animal{ new_animal, {0,0} };
-		const auto& ref = elements.emplace_back(new_DB_animal);
-		const size_t new_animal_index = &ref - elements.data();
+		const Element new_element{ new_animal, {0,0} };
+		const auto& ref_animal = elements.emplace_back(new_element);
+		const size_t new_animal_index = &ref_animal - elements.data();
+
 		return {new_animal, new_animal_index};
 	}
 
-	void add_new_question(const auto& last_animal, const auto& new_animal, 
-		const size_t last_animal_index, const size_t new_animal_index, 
-		size_t* last_question_next_ID_ptr) {
+	auto add_new_question(const auto& last_animal, const auto& new_animal,
+		const auto last_animal_index, const auto new_animal_index) {
 
 		// Ask new question on new animal
 		std::string new_question;
@@ -157,15 +158,18 @@ struct Database {
 		const auto& new_question_indices = (key_stroke == 'y') ?
 			Next_IDs{ new_animal_index, last_animal_index } :
 			Next_IDs{ last_animal_index, new_animal_index };
-		const Element new_DB_question{ new_question, new_question_indices };
-		const auto& ref2 = elements.emplace_back(new_DB_question);
+		const Element new_element{ new_question, new_question_indices };
+		const auto& ref_quest = elements.emplace_back(new_element); // invalidates all pointers
+
+		return &ref_quest - elements.data();
+	}
+
+	void reconnect_last_question(const auto new_question_index, const auto last_question) {
 		// Reconnect last stored question of database
-		const size_t new_question_index = &ref2 - elements.data();
-
-
-		*last_question_next_ID_ptr = new_question_index;
-
-
+		if (last_question.responce == 'y')
+			elements.at(last_question.index).next_IDs.yes_ID = new_question_index;
+		else 
+			elements.at(last_question.index).next_IDs.no_ID = new_question_index;
 	}
 };
 
@@ -178,23 +182,24 @@ int main() {
 		std::cout << "Please think of an animal.... Press Enter key when ready.\n";
 		std::cin.ignore();
 
-		const auto& [last_animal, last_animal_index, last_question_next_ID_ptr] = 
+		const auto& [last_animal, last_animal_index, last_question] =
 			database.ask_all_questions_until_animal();
 
 		if (database.is_animal_in_mind(last_animal)) {
 			std::cout << "YES, I FOUND IT !!\n";
 			break;
 		}
-
 		const auto [new_animal, new_animal_index] = database.add_new_animal();
 
-		database.add_new_question(last_animal, new_animal, 
-			last_animal_index, new_animal_index, last_question_next_ID_ptr);
+		const auto new_question_index = database.add_new_question(last_animal,
+			new_animal, last_animal_index, new_animal_index);
+
+		database.reconnect_last_question(new_question_index, last_question);
 
 	} while (true);
 
 	// Print updated database.
 	database.print();
-	//database.overwrite_file_with_updated_DB();
+	database.update_file();
 	database.print_file();
 }
