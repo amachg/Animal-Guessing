@@ -59,7 +59,7 @@ struct Database {
 		std::cout << fileStream.rdbuf() << std::endl;
 		//std::cout << "Current pos:  " << fileStream.tellg() << std::endl;
 	}
-	void print() {
+	void print() const {
 		// Print memory database
 		std::cout << "Vector contents:\n";
 		std::copy(elements.cbegin(), elements.cend(),
@@ -76,8 +76,8 @@ struct Database {
 
 	struct Last_question { size_t index{ 0 }; char responce{}; };
 
-	std::tuple<const std::string, const  size_t, const Last_question >
-		ask_all_questions_until_animal() {
+	std::tuple<const std::string, const size_t, const Last_question >
+	ask_all_questions_until_animal() const {
 		// Ask all the stored questions
 		size_t current_index{ 0 };
 		Element curr_element = elements.front();
@@ -103,7 +103,7 @@ struct Database {
 		return { curr_element.question_or_animal, current_index, last_question };
 	}
 
-	bool is_animal_in_mind(const auto& animal) {
+	bool is_animal_in_mind(const auto& animal) const {
 		// Has the animal been found?
 		std::cout << "Is it a " << animal << "?\n";
 		char key_stroke{};
@@ -163,7 +163,8 @@ struct Database {
 		return &ref_quest - elements.data();
 	}
 
-	void reconnect_last_question(const auto new_question_index, const auto last_question) {
+	void reconnect_last_question(const auto new_question_index, 
+		const auto last_question) {
 		// Reconnect last stored question of database
 		if (last_question.responce == 'y')
 			elements.at(last_question.index).next_IDs.yes_ID = new_question_index;
