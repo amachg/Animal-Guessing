@@ -1,10 +1,11 @@
-// Animal Guessing Game
-// for consoles written in c++20 & CMake
-// Binary tree structure implemented with vectors.
-// Users contributing in questions database.elements.
+// Animal Guessing console Game 
+// with user contribution.
+// 
+// C++20, cmake
+// Binary tree structure implemented with vectors
 // Conversion from my Univac-BASIC code of 16/12/86,
-// studing Computer Science in Mathematics Department
-// at Aristotelean University of Thessaloniki,
+// while studing Computer Science at mathematics department
+// in Aristotelean university of Thessaloniki.
 //
 // by Machaerides Tassos, (LAST EDITED: September, 2022)
 
@@ -15,15 +16,13 @@
 #include <vector>
 #include <algorithm> //all_of
 
-struct Next_IDs { size_t yes_ID{}, no_ID{}; };
-
 struct Element {
+	struct Next_IDs { size_t yes_ID{}, no_ID{}; };	// zeros for animals
+
 	std::string question_or_animal;
 	Next_IDs next_IDs{};
 
-	bool is_a_question() const {	// zeros for animals
-		return next_IDs.yes_ID || next_IDs.no_ID;
-	}
+	bool is_a_question() const { return next_IDs.yes_ID || next_IDs.no_ID; }
 	friend std::istream& operator >> (std::istream& is, Element& e) {
 		return is >> std::quoted(e.question_or_animal)
 			>> e.next_IDs.yes_ID >> e.next_IDs.no_ID;
@@ -156,8 +155,8 @@ struct Database {
 
 		// Add user added question to database
 		const auto& new_question_indices = (key_stroke == 'y') ?
-			Next_IDs{ new_animal_index, last_animal_index } :
-			Next_IDs{ last_animal_index, new_animal_index };
+			Element::Next_IDs{ new_animal_index, last_animal_index } :
+			Element::Next_IDs{ last_animal_index, new_animal_index };
 		const Element new_element{ new_question, new_question_indices };
 		const auto& ref_quest = elements.emplace_back(new_element); // invalidates all pointers
 
