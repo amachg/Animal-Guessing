@@ -1,0 +1,3 @@
+C:/DATA/Κώδικα Αποθετήριο/Animal-Guessing/out/build/x64-debug/CMakeFiles/Animal-Guessing.dir
+C:/DATA/Κώδικα Αποθετήριο/Animal-Guessing/out/build/x64-debug/CMakeFiles/edit_cache.dir
+C:/DATA/Κώδικα Αποθετήριο/Animal-Guessing/out/build/x64-debug/CMakeFiles/rebuild_cache.dir
