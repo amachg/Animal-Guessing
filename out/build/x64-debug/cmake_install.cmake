@@ -1,8 +1,8 @@
-# Install script for directory: C:/DATA/Κώδικα Αποθετήριο/Animal-Guessing
+# Install script for directory: C:/DATA/Source/Repos/amachg/Animal-Guessing
 
 # Set the install prefix
 if(NOT DEFINED CMAKE_INSTALL_PREFIX)
-  set(CMAKE_INSTALL_PREFIX "C:/DATA/Κώδικα Αποθετήριο/Animal-Guessing/out/install/x64-debug")
+  set(CMAKE_INSTALL_PREFIX "C:/DATA/Source/Repos/amachg/Animal-Guessing/out/install/x64-debug")
 endif()
 string(REGEX REPLACE "/$" "" CMAKE_INSTALL_PREFIX "${CMAKE_INSTALL_PREFIX}")
 
@@ -40,5 +40,5 @@ endif()
 
 string(REPLACE ";" "\n" CMAKE_INSTALL_MANIFEST_CONTENT
        "${CMAKE_INSTALL_MANIFEST_FILES}")
-file(WRITE "C:/DATA/Κώδικα Αποθετήριο/Animal-Guessing/out/build/x64-debug/${CMAKE_INSTALL_MANIFEST}"
+file(WRITE "C:/DATA/Source/Repos/amachg/Animal-Guessing/out/build/x64-debug/${CMAKE_INSTALL_MANIFEST}"
      "${CMAKE_INSTALL_MANIFEST_CONTENT}")

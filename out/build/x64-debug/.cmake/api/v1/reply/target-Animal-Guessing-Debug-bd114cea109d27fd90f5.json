@@ -14,7 +14,7 @@
 		"commands" : 
 		[
 			"add_executable",
-			"set_property"
+			"target_compile_features"
 		],
 		"files" : 
 		[
@@ -28,13 +28,13 @@
 			{
 				"command" : 0,
 				"file" : 0,
-				"line" : 9,
+				"line" : 7,
 				"parent" : 0
 			},
 			{
 				"command" : 1,
 				"file" : 0,
-				"line" : 12,
+				"line" : 9,
 				"parent" : 0
 			}
 		]
@@ -45,10 +45,10 @@
 			"compileCommandFragments" : 
 			[
 				{
-					"fragment" : "/DWIN32 /D_WINDOWS /W3 /GR /EHsc /MDd /Zi /Ob0 /Od /RTC1"
+					"fragment" : "/DWIN32 /D_WINDOWS /EHsc /Zi /Ob0 /Od /RTC1 -MDd"
 				},
 				{
-					"fragment" : "-std:c++20"
+					"fragment" : "-std:c++latest"
 				}
 			],
 			"language" : "CXX",
@@ -58,7 +58,7 @@
 				[
 					2
 				],
-				"standard" : "20"
+				"standard" : "23"
 			},
 			"sourceIndexes" : 
 			[
@@ -72,7 +72,7 @@
 		"commandFragments" : 
 		[
 			{
-				"fragment" : "/DWIN32 /D_WINDOWS /W3 /GR /EHsc /MDd /Zi /Ob0 /Od /RTC1",
+				"fragment" : "/DWIN32 /D_WINDOWS /EHsc /Zi /Ob0 /Od /RTC1 -MDd",
 				"role" : "flags"
 			},
 			{

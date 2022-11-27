@@ -9,7 +9,7 @@
 					"jsonFile" : "directory-.-Debug-d0094a50bb2071803777.json",
 					"minimumCMakeVersion" : 
 					{
-						"string" : "3.8"
+						"string" : "3.21"
 					},
 					"projectIndex" : 0,
 					"source" : ".",
@@ -39,7 +39,7 @@
 				{
 					"directoryIndex" : 0,
 					"id" : "Animal-Guessing::@6890427a1f51a3e7e1df",
-					"jsonFile" : "target-Animal-Guessing-Debug-45a61205a6530f4ed2c7.json",
+					"jsonFile" : "target-Animal-Guessing-Debug-bd114cea109d27fd90f5.json",
 					"name" : "Animal-Guessing",
 					"projectIndex" : 0
 				}
@@ -49,8 +49,8 @@
 	"kind" : "codemodel",
 	"paths" : 
 	{
-		"build" : "C:/DATA/\u039a\u03ce\u03b4\u03b9\u03ba\u03b1 \u0391\u03c0\u03bf\u03b8\u03b5\u03c4\u03ae\u03c1\u03b9\u03bf/Animal-Guessing/out/build/x64-debug",
-		"source" : "C:/DATA/\u039a\u03ce\u03b4\u03b9\u03ba\u03b1 \u0391\u03c0\u03bf\u03b8\u03b5\u03c4\u03ae\u03c1\u03b9\u03bf/Animal-Guessing"
+		"build" : "C:/DATA/Source/Repos/amachg/Animal-Guessing/out/build/x64-debug",
+		"source" : "C:/DATA/Source/Repos/amachg/Animal-Guessing"
 	},
 	"version" : 
 	{
