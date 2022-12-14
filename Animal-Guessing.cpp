@@ -3,9 +3,9 @@
 // 
 // C++20, cmake
 // Binary tree structure implemented with vectors
-// Conversion from my Univac-BASIC code of 16/12/86,
-// while studing Computer Science at mathematics department
-// in Aristotelean university of Thessaloniki.
+// Conversion from my Univac-BASIC code of 16/12/1986,
+// while studing programming at mathematics department
+// in Aristotelean University of Thessaloniki.
 //
 // by Machaerides Tassos, (LAST EDITED: September, 2022)
 
